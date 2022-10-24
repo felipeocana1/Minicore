@@ -1,0 +1,72 @@
+<div class="d-flex col-12">
+  <table class="table table-striped col mx-2">
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>Cupo</th>
+        <th>Pases</th>
+        <th>Costo pase</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pass of passes">
+        <td>{{ pass.type }}</td>
+        <td>{{ pass.quota }}</td>
+        <td>{{ pass.passes }}</td>
+        <td>{{ pass.cost }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="table table-striped col mx-2">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Fecha de compra</th>
+        <th>Tipo de pase</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.name }} {{ user.lastName }}</td>
+        <td>{{ user.purchase_date | date: "longDate":"es:Es" }}</td>
+        <td>{{ user.pass_type }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="col-12 d-flex mt-3">
+  <form #myForm="ngForm" novalidate class="col text-center">
+    <label class="me-2">Desde</label>
+    <input type="date" [(ngModel)]="from" name="from" class="w-25" />
+  </form>
+</div>
+<table class="table table-striped col-10">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Fecha fin</th>
+      <th>Pases</th>
+      <th>Pases disponibles al {{ this.from | date : "longDate":"es:Es" }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let user of users | dateFilter: from">
+      <td>{{ user.name }} {{ user.lastName }}</td>
+      <td>{{ user.expiration_date | date : "longDate":"es:Es" }}</td>
+      <td
+        *ngFor="let pass of passes"
+        [ngClass]="{ 'd-none': pass._id != user.pass_id }"
+      >
+        <p *ngIf="pass._id == user.pass_id">{{ pass.passes }}</p>
+      </td>
+      <td
+        *ngFor="let pass of passes"
+        [ngClass]="{ 'd-none': pass._id != user.pass_id }"
+      >
+        <p *ngIf="pass._id == user.pass_id">
+          {{ this.remainingPasses(user.purchase_date, pass.passes, this.from) }}
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
